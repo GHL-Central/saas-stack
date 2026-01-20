@@ -1,0 +1,5 @@
+{
+  "name": "SaaS Stack: Recurring Revenue Simulator",
+  "description": "An interactive playground to visualize the exponential power of recurring revenue models compared to one-time sales. Explore churn, growth, and the compounding effect of monthly subscriptions.",
+  "requestFramePermissions": []
+}
