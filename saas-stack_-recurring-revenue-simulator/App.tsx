@@ -4,12 +4,11 @@ import {
   LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend 
 } from 'recharts';
 import { 
-  TrendingUp, Users, DollarSign, ArrowUpRight, BrainCircuit, RefreshCw, BarChart3, Info, Rocket, Building2
+  TrendingUp, Users, DollarSign, ArrowUpRight, RefreshCw, BarChart3, Info, Rocket, Building2
 } from 'lucide-react';
 import { SimulationData, SimulationParams, AIAnalysis } from './types';
 import SliderInput from './components/SliderInput';
 import MetricsCard from './components/MetricsCard';
-import { analyzeSimulation } from './services/geminiService';
 
 const App: React.FC = () => {
   const [params, setParams] = useState<SimulationParams>({
@@ -21,8 +20,6 @@ const App: React.FC = () => {
     oneTimeSalePrice: 150
   });
 
-  const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const simulationResults = useMemo(() => {
     const data: SimulationData[] = [];
@@ -64,13 +61,6 @@ const App: React.FC = () => {
     };
   }, [simulationResults, params]);
 
-  const handleAnalyze = async () => {
-    setIsAnalyzing(true);
-    const analysis = await analyzeSimulation(params, finalMetrics.mrr, finalMetrics.totalRevenue);
-    setAiAnalysis(analysis);
-    setIsAnalyzing(false);
-  };
-
   const applyScenario = (type: 'solo' | 'startup') => {
     if (type === 'solo') {
       setParams({
@@ -93,9 +83,6 @@ const App: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (aiAnalysis) setAiAnalysis(null);
-  }, [params.churnRate, params.arpu, params.monthlyNewCustomers, params.startingCustomers]);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
@@ -187,14 +174,6 @@ const App: React.FC = () => {
               />
             </div>
 
-            <button 
-              onClick={handleAnalyze}
-              disabled={isAnalyzing}
-              className="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-black py-4 px-4 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-xl shadow-indigo-500/20 active:scale-95"
-            >
-              <BrainCircuit className="w-5 h-5" />
-              {isAnalyzing ? 'Thinking...' : 'AI Breakdown'}
-            </button>
           </div>
         </aside>
 
@@ -230,36 +209,7 @@ const App: React.FC = () => {
             />
           </div>
 
-          {aiAnalysis && (
-            <div className="bg-white border-2 border-indigo-500/20 p-8 rounded-[2rem] shadow-2xl shadow-indigo-500/5 animate-in fade-in slide-in-from-top-6 duration-1000">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 bg-indigo-600 rounded-2xl">
-                  <BrainCircuit className="text-white w-8 h-8" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-black text-slate-900 leading-tight">{aiAnalysis.headline}</h2>
-                  <p className="text-sm font-bold text-indigo-600">Expert Insights</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="space-y-4">
-                  {aiAnalysis.insights.map((insight, idx) => (
-                    <div key={idx} className="flex gap-4 items-start bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:border-indigo-200 transition-colors">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-black">{idx+1}</div>
-                      <p className="text-slate-700 text-sm font-medium leading-relaxed">{insight}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex flex-col justify-center bg-indigo-600 p-8 rounded-3xl text-white shadow-xl shadow-indigo-500/20">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="h-1 w-8 bg-indigo-300 rounded-full"></div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-100">The Verdict</p>
-                  </div>
-                  <p className="text-2xl font-black italic leading-tight">"{aiAnalysis.verdict}"</p>
-                </div>
-              </div>
-            </div>
-          )}
+          
 
           <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
             <h3 className="text-xl font-black text-slate-900 mb-8 flex items-center gap-3">
